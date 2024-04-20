@@ -1,4 +1,3 @@
-import { StarIcon } from "@chakra-ui/icons";
 import { Button } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
 import { SiweMessage } from "siwe";
@@ -33,33 +32,31 @@ export default function Home() {
           onSuccess={onSuccess}
           onError={onError}
         >
-          <Button
-            className="flex w-fit bg-blue-500 p-4"
-            as="div"
-            isDisabled={loading}
-          >
-            Connect Wallet
-          </Button>
+          <WalletButtonContent wallet={wallet} />
         </ConnectWalletButton>
 
-        <ConnectWalletButton
-          onClick={onClick}
-          onSuccess={onSuccess}
-          onError={onError}
-        >
-          <Button variant="outline" as="div" isDisabled={loading}>
-            Custom Button UI
-          </Button>
-        </ConnectWalletButton>
-
-        <ConnectWalletButton
-          onClick={onClick}
-          onSuccess={onSuccess}
-          onError={onError}
-        >
-          <StarIcon color="green" />
-        </ConnectWalletButton>
+       
       </div>
     </div>
+  );
+}
+
+interface WalletButtonContentProps {
+  wallet: string;
+}
+
+function WalletButtonContent({ wallet }: WalletButtonContentProps) {
+  if (!wallet) {
+    return (
+      <Button className="flex w-fit bg-blue-500 p-4" as="div">
+        Connect Wallet
+      </Button>
+    );
+  }
+
+  return (
+    <Button className="flex w-fit bg-blue-500 p-4" as="div">
+      Congratulations! You have connected to {wallet}
+    </Button>
   );
 }

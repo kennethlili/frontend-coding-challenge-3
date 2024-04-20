@@ -1,4 +1,5 @@
 import "@/styles/globals.scss";
+import { ChakraProvider } from "@chakra-ui/react";
 import {
   RainbowKitProvider,
   darkTheme,
@@ -23,22 +24,24 @@ export default function App({ Component, pageProps }: AppProps) {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <WagmiProvider config={wagmiConfig} reconnectOnMount={false}>
-        <RainbowKitProvider
-          appInfo={{
-            appName: "Moongate",
-            learnMoreUrl: "https://moongate.id",
-          }}
-          modalSize="compact"
-          theme={{
-            lightMode: lightTheme(),
-            darkMode: darkTheme(),
-          }}
-        >
-          <Component {...pageProps} />
-        </RainbowKitProvider>
-      </WagmiProvider>
-    </QueryClientProvider>
+    <ChakraProvider>
+      <QueryClientProvider client={queryClient}>
+        <WagmiProvider config={wagmiConfig} reconnectOnMount={false}>
+          <RainbowKitProvider
+            appInfo={{
+              appName: "Moongate",
+              learnMoreUrl: "https://moongate.id",
+            }}
+            modalSize="compact"
+            theme={{
+              lightMode: lightTheme(),
+              darkMode: darkTheme(),
+            }}
+          >
+            <Component {...pageProps} />
+          </RainbowKitProvider>
+        </WagmiProvider>
+      </QueryClientProvider>
+    </ChakraProvider>
   );
 }
