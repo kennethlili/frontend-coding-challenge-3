@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import { SiweMessage } from "siwe";
-import { getCookie } from 'cookies-next';
+import { getIronSession } from "iron-session";
 
 type Data = {
   success: boolean;
@@ -17,9 +17,13 @@ export default async function handler(
     const siweMessage = new SiweMessage(message);
     const fields = await siweMessage.verify({ signature });
 
-    const nonceFromCookie = getCookie("nonce",{req,res});
-
-    if (fields.data.nonce !== nonceFromCookie)
+    const session = await getIronSession<{ nonce: string }>(req, res, {
+      password: "123456789123456789123456789123456789",
+      cookieName: "siwe",
+    });
+    
+    console.log({session})
+    if (fields.data.nonce !== session.nonce)
       return res
         .status(422)
         .json({ success: false, message: "Invalid nonce." });
