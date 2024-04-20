@@ -11,11 +11,40 @@ export default function Home() {
     setLoading(true);
   }, []);
 
-  const onSuccess = useCallback((message: SiweMessage, signature: string) => {
-    setLoading(false);
-    // TODO verify signature with message from backend
-    setWallet(message.address);
-  }, []);
+  const verifySignature = async ({
+    message,
+    signature,
+  }: {
+    message: SiweMessage;
+    signature: string;
+  }) => {
+    const response = await fetch("/api/verify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message, signature }),
+    });
+    const responseBody = await response.json();
+
+    if (!responseBody.success) {
+      console.error("Failed to verify signature", responseBody.message);
+      onError();
+    } else if (responseBody.success) {
+      return true;
+    }
+  };
+
+  const onSuccess = useCallback(
+    async (message: SiweMessage, signature: string) => {
+      setLoading(false);
+      const verified = await verifySignature({ message, signature });
+      if (verified) {
+        setWallet(message.address);
+      }
+    },
+    []
+  );
 
   const onError = useCallback(() => {
     setLoading(false);
@@ -34,8 +63,6 @@ export default function Home() {
         >
           <WalletButtonContent wallet={wallet} />
         </ConnectWalletButton>
-
-       
       </div>
     </div>
   );

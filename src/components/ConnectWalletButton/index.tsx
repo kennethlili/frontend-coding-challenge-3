@@ -50,35 +50,13 @@ const ConnectWalletButton = ({
 
   useEffect(() => {
     if (isSigned && signature && message) {
-      verifySignature(message, signature, nonce).then((verified) => {
-        if (verified) {
-          onSuccess(message, signature);
-        } else {
-          onError();
-        }
-      });
+      onSuccess(message, signature);
     }
   }, [isSigned, signature, message]);
 
   useEffect(() => {
     disconnect();
   }, []);
-
-  const verifySignature = async (
-    message: SiweMessage,
-    signature: string,
-    nonce: string
-  ) => {
-    try {
-      await message.verify({
-        signature,
-        nonce,
-      });
-      return true;
-    } catch (error) {
-      return false;
-    }
-  };
 
   const reset = () => {
     setShowConfirmAddress(false);
@@ -102,12 +80,18 @@ const ConnectWalletButton = ({
     address?: string
   ): Promise<SiweMessage | null> => {
     if (!address) return null;
-    const nonce = generateNonce();
+    const nonce = await fetchNonce();
     const message = await signingMessage(address, nonce);
     setNonce(nonce);
     setMessage(message);
     await signMessage({ message: message.prepareMessage() });
     return message;
+  };
+
+  const fetchNonce = async () => {
+    const res = await fetch("/api/nonce");
+    const data = await res.json();
+    return data.nonce;
   };
 
   const handleOpenConnectModal = (
