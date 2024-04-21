@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { generateNonce } from "siwe";
-import { getIronSession } from "iron-session";
+import { Redis } from "@upstash/redis";
 
 type Data = {
   nonce: string;
@@ -12,13 +12,13 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     const nonce = generateNonce();
-    const session = await getIronSession<{ nonce: string }>(req, res, {
-      password: "123456789123456789123456789123456789",
-      cookieName: "siwe",
+    const redis = new Redis({
+      url: "https://apn1-wondrous-chipmunk-33623.upstash.io",
+      token:
+        "AYNXASQgZDI4YmY1MDgtNzk1OC00YWJiLWFmYWItNWU5NjM5OGZkYTVjNTUzNTBhZjE0NDNhNDNhY2ExYjNkNWI1N2YxYWViZDg=",
     });
+    await redis.set("nonce", nonce);
 
-    session.nonce = nonce;
-    await session.save();
     res.status(200).json({ nonce });
   } else {
     res.status(405).end("Method Not Allowed");

@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import { SiweMessage } from "siwe";
-import { getIronSession } from "iron-session";
+import { Redis } from "@upstash/redis";
 
 type Data = {
   success: boolean;
@@ -17,13 +17,14 @@ export default async function handler(
     const siweMessage = new SiweMessage(message);
     const fields = await siweMessage.verify({ signature });
 
-    const session = await getIronSession<{ nonce: string }>(req, res, {
-      password: "123456789123456789123456789123456789",
-      cookieName: "siwe",
+    const redis = new Redis({
+      url: 'https://apn1-wondrous-chipmunk-33623.upstash.io',
+      token: 'AYNXASQgZDI4YmY1MDgtNzk1OC00YWJiLWFmYWItNWU5NjM5OGZkYTVjNTUzNTBhZjE0NDNhNDNhY2ExYjNkNWI1N2YxYWViZDg=',
     });
+
+    const nonce = await redis.get('nonce'); 
     
-    console.log({session})
-    if (fields.data.nonce !== session.nonce)
+    if (fields.data.nonce !== nonce)
       return res
         .status(422)
         .json({ success: false, message: "Invalid nonce." });
