@@ -12,11 +12,7 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     const nonce = generateNonce();
-    const redis = new Redis({
-      url: "https://apn1-wondrous-chipmunk-33623.upstash.io",
-      token:
-        "AYNXASQgZDI4YmY1MDgtNzk1OC00YWJiLWFmYWItNWU5NjM5OGZkYTVjNTUzNTBhZjE0NDNhNDNhY2ExYjNkNWI1N2YxYWViZDg=",
-    });
+    const redis = Redis.fromEnv();
     await redis.set("nonce", nonce);
 
     res.status(200).json({ nonce });
