@@ -1,3 +1,7 @@
+# Notes for verify wallet in api
+
+Please noted that I have store the nonce in [Upstash-Redis](https://upstash.com/docs/redis/overall/getstarted), the reason why I am not using cookie-based session is because of it will have error on CodeSandbox. [Reference](https://github.com/codesandbox/codesandbox-client/issues/8232#issuecomment-1864580307)
+
 # Overview
 
 Develop a custom Crypto-Wallet Connect Button Component to integrate with the MetaMask Chrome Extension using Next.js (version 12.3.4), TypeScript, [RainbowKit](https://www.rainbowkit.com/docs/custom-connect-button) and [SIWE](https://www.npmjs.com/package/siwe). This component should encapsulate all necessary wallet authentication steps, including wallet connection, message signing, signature verification, and error handling. The challenge aims to assess your ability to create dynamic, reusable, scalable, and extensible UI components.
