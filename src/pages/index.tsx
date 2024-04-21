@@ -2,10 +2,12 @@ import { Button } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
 import { SiweMessage } from "siwe";
 import ConnectWalletButton from "../components/ConnectWalletButton";
+import { useToast } from "@chakra-ui/react";
 
 export default function Home() {
   const [wallet, setWallet] = useState("");
   const [loading, setLoading] = useState(false);
+  const toast = useToast();
 
   const onClick = useCallback(() => {
     setLoading(true);
@@ -29,7 +31,7 @@ export default function Home() {
 
     if (!responseBody.success) {
       console.error("Failed to verify signature", responseBody.message);
-      onError();
+      onError("Failed to verify signature: " + responseBody.message);
     } else if (responseBody.success) {
       return true;
     }
@@ -40,13 +42,29 @@ export default function Home() {
       setLoading(false);
       const verified = await verifySignature({ message, signature });
       if (verified) {
+        toast({
+          title: "Wallet Connection",
+          description: "Verified",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
         setWallet(message.address);
       }
     },
     []
   );
 
-  const onError = useCallback(() => {
+  const onError = useCallback((errorMessage?: string) => {
+    if (errorMessage) {
+      toast({
+        title: "Wallet Connection",
+        description: errorMessage,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
     setLoading(false);
     setWallet("");
   }, []);
